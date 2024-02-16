@@ -171,7 +171,10 @@ public class Ripasso implements BusinessLogic
         List<Client> res = new ArrayList<>();
 
         for(Client c : clients)
-            if(c.getOpenedOn()==LocalDate.now())
+            if(c.getOpenedOn().isAfter(LocalDate.now().minusYears(1)))
+                res.add(c);
+
+        return res;
     }
 
     @Override
