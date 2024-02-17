@@ -16,9 +16,9 @@ public class Pc extends Entity
     private boolean inUse;
     private LocalDate dateOfPurchase;
 
-    private Pc(){};
+    public Pc(){};
 
-    private Pc(Integer id,String processor, int mmasize, String mmatype, int ram, String model, int price, int warrantly,
+    public Pc(Integer id,String processor, int mmasize, String mmatype, int ram, String model, int price, int warrantly,
             boolean inUse, LocalDate dateOfPurchase) 
     {
         super(id);
@@ -157,7 +157,7 @@ public class Pc extends Entity
         if(getMmatype()==null || getMmatype().isBlank())
             liste.add("ERRORE: Mmatype nullo o vuoto");
 
-        if(getRam()<=8 || getRam() >= 64)
+        if(getRam()<8 || getRam() > 64)
             liste.add("ERRORE: Ram minore di 8 o maggiore di 64");
 
         if(getModel()==null || getModel().isBlank())
@@ -185,6 +185,11 @@ public class Pc extends Entity
         return "Pc [processor=" + processor + ", mmasize=" + mmasize + ", mmatype=" + mmatype + ", ram=" + ram
                 + ", model=" + model + ", price=" + price + ", warrantly=" + warrantly + ", inUse=" + inUse
                 + ", dateOfPurchase=" + dateOfPurchase + "]";
+    }
+
+    public LocalDate getWarrantlyEndDate()
+    {
+        return getDateOfPurchase().plusMonths(getWarrantly());
     }
 
 }
