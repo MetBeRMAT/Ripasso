@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.RowFilter.Entry;
+
 import com.generation.entities.Client;
 import com.generation.entities.Employee;
 import com.generation.entities.Entity;
@@ -67,7 +69,7 @@ public class Ripasso implements BusinessLogic
         employees.add(new Employee(9, "Matthew", "Taylor", LocalDate.of(1983, 4, 8), "Quality Assurance Tester", 60000, LocalDate.of(2020, 1, 5), "Bachelor's", 13));
         employees.add(new Employee(10, "Emma", "Anderson", LocalDate.of(1998, 2, 28), "Customer Support Representative", 45000, LocalDate.of(2020, 9, 20), "Bachelor's", 12));
 
-        System.out.println(getAverageSalaryByRole(employees));
+        System.out.println(getDeltaByEducation(employees));
     }
 
     public static List<Entity> getAllValids(List<Pc> computers,List<Person> people,List<Client> clients,List<Employee> employees) 
@@ -298,33 +300,48 @@ public class Ripasso implements BusinessLogic
     }
 
     
+    //stipendio medio di tutti gli impiegati
+    //chiave: livello di studio -- valore: stipMed con livello "Master"- stipMed senza livello "Master"
     //voglio come chiavi tutti i livelli di studio, e voglio come valore la differenza tra lo stipendio medio
     //di chi ha quel livello rispetto a chi non lo ha
-
     public static Map<String, Integer> getDeltaByEducation(List<Employee> employees) 
     {
-        Map<String, Integer> studySalarySum = new HashMap<>();
-        Map<String, Integer> averageSalary = new HashMap<>();
+        Map<String, Integer> averageSalaryByEducation = new HashMap<>();
+        Map<String, Integer> countByEducation = new HashMap<>();
+        Map<String, Integer> deltaByEducation = new HashMap<>();
 
+        int somma = 0;
+
+        for(Employee e : employees)
+            somma += e.getMonthSalary();
+
+        int stipendioMedioTotale = somma/employees.size();
+        //Adesso prendo lo stipendio medio totale tramite i livelli
         for(Employee e : employees)
         {
             String education = e.getEducation();
-            int salarioMensile = e.getMonthSalary();
-
-            if(studySalarySum.containsKey(education.equals("Master's")))
-                studySalarySum.put(education, studySalarySum.get(education)+salarioMensile);
-            else if(studySalarySum.containsKey(education.equals("Bachelor's")))
-                    studySalarySum.put(education, studySalarySum.get(education)+salarioMensile);
-                else
-                    studySalarySum.put(education, salarioMensile);
+            int salary = e.getMonthSalary();
+            if(averageSalaryByEducation.containsKey(education))
+                averageSalaryByEducation.put(education, averageSalaryByEducation.get(education)+salary);
+            else
+                averageSalaryByEducation.put(education,salary);
+            
+            if(countByEducation.containsKey(education))
+                countByEducation.put(education, countByEducation.get(education)+1);
+            else
+                countByEducation.put(education, 1);
         }
 
-        for(String education : studySalarySum.keySet())
+        for(java.util.Map.Entry<String, Integer> coppia : averageSalaryByEducation.entrySet())
         {
-            int totalSalary = studySalarySum.get(education);
+            String education = coppia.getKey();
+            int salary = coppia.getValue();
+            int count = countByEducation.get(education);
+            int stipendioMedio = salary/count;
+            int delta = stipendioMedio - stipendioMedioTotale;
+            deltaByEducation.put(education, delta);
         }
-
-        return null;
+        return deltaByEducation;
     }
 
 }
